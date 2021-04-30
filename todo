@@ -1,0 +1,5 @@
+refactor into functions to not being bad
+change tictactoe rule logic to not being bad
+add better cin input stuff when know more about stringstreams
+add gui using sdl2 or qt
+remove limiter

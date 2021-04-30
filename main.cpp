@@ -225,8 +225,88 @@ class NullRuleEngine : public IRuleEngine
                 break;
             } /////////////////////////////
 
+            if (i == 0) //make sure we only do these diagonal tests once
+            {
             
-        }
+                SquareTest = BoardSquare::Empty;
+
+                //third test diagonal left
+                int diagonalcounter = 0;
+                for (int i2 = 0; i2 < board.GetWidth() * board.GetWidth(); i2+=board.GetWidth()) //---------this diagonal wins
+                {
+                    int AddedNumber = diagonalcounter; //diagonal left to right check
+                    if (board.GetSquare(i2 + AddedNumber) == BoardSquare::Empty) //check quickly to skip win condition b4 doing other checks
+                    {
+                        isStalemateIfNoWin = false;
+                        SquareTest = BoardSquare::Empty;
+                        break;
+                    }
+
+                    if (i2 == 0 && board.GetSquare(i2 + AddedNumber) != BoardSquare::Empty) 
+                    {
+                        SquareTest = board.GetSquare(i2 + AddedNumber);
+                        diagonalcounter+=1;
+                        continue;
+                    }
+
+                    if (SquareTest == board.GetSquare(i2 + AddedNumber)) {diagonalcounter+=1; continue;}
+                    else
+                    {
+                        SquareTest = BoardSquare::Empty;
+                        break;
+                    }
+
+                } //end sub test loop
+
+                if (SquareTest != BoardSquare::Empty) //check sub test loop 3 for win
+                {
+                    _win = board.GetConverted(SquareTest);
+                    break;
+                } /////////////////////////////
+            
+                SquareTest = BoardSquare::Empty;
+
+                //third test diagonal right
+                diagonalcounter = 0;
+                for (int i2 = 0 ; i2 < board.GetWidth() * board.GetWidth(); i2+=board.GetWidth()) //---------this diagonal right
+                {
+                    
+                    int AddedNumber = board.GetWidth() - 1;
+                    if (i2 != 0) AddedNumber = board.GetWidth() - 1 - diagonalcounter; //diagonal right to left check
+                    
+                    if (board.GetSquare(i2 + AddedNumber) == BoardSquare::Empty) //check quickly to skip win condition b4 doing other checks
+                    {
+                        isStalemateIfNoWin = false;
+                        SquareTest = BoardSquare::Empty;
+                        break;
+                    }
+
+                    if (i2 == 0 && board.GetSquare(i2 + AddedNumber) != BoardSquare::Empty) 
+                    {
+                        SquareTest = board.GetSquare(i2 + AddedNumber);
+                        diagonalcounter+=1;
+                        continue;
+                    }
+
+                    if (SquareTest == board.GetSquare(i2 + AddedNumber)) {diagonalcounter+=1; continue;}
+                    else
+                    {
+                        SquareTest = BoardSquare::Empty;
+                        break;
+                    }
+
+                } //end sub test loop
+
+                if (SquareTest != BoardSquare::Empty) //check sub test for win
+                {
+                    _win = board.GetConverted(SquareTest);
+                    break;
+                } /////////////////////////////
+
+
+            }//ending do once tests */
+   
+        }//ending for loop tests
 
         if (_win != WinningPlayer::None) return _win;
         if (_win == WinningPlayer::None)
@@ -242,7 +322,25 @@ class NullRuleEngine : public IRuleEngine
 
 int main()
 {
-    Board board(3);
+    int input;
+    while (!input || input < 0 || input > 9)
+    {
+        cout << "what dimension board do u want to play on (x * x)\n";
+        while (!(cin >> input))
+        {
+            std::cin.clear(); // clear the error flags
+            std::cin.ignore(INT32_MAX, '\n'); // discard the row
+            std::cout << "Invalid input! Try again: ";
+        }
+        
+        if (!input || input < 0 || input > 9)
+            {
+                cout << "invalid board number\n" << "9 is max value, value must be greater than 0 \n";
+                input = 0;
+            }
+    }
+
+    Board board(input);
     NullRuleEngine ruleEngine;
 
     Game game(board,ruleEngine);
@@ -255,7 +353,7 @@ int main()
         case WinningPlayer::X: cout << "Player X won \n"; break;
         case WinningPlayer::O: cout << "Player Y won \n"; break;
         case WinningPlayer::Stalemate: cout << "Stalemate between the two players \n"; break;
-        default: cout << "how did u get here bitch???? \n"; break;
+        default: cout << "weird error \n"; break;
     }
 
     return 0;
